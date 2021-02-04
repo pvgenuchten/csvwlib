@@ -2,6 +2,7 @@
 
 ## 0.3.2
 
-2021-02-??
+2021-02-04
 
   * Derwen begins maintenance and distribution on PyPi
+  * prior history <https://github.com/Aleksander-Drozd/csvwlib>
