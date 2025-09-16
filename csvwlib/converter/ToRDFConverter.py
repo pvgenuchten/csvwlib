@@ -13,7 +13,6 @@ from csvwlib.utils.rdf.OntologyUtils import OntologyUtils
 from csvwlib.utils.rdf.RDFGraphUtils import RDFGraphUtils
 from csvwlib.utils.url.PropertyUrlUtils import PropertyUrlUtils
 from csvwlib.utils.url.UriTemplateUtils import UriTemplateUtils
-from csvwlib.utils.url.ValueUrlUtils import ValueUrlUtils
 
 CSVW = Namespace('http://www.w3.org/ns/csvw#')
 
@@ -122,9 +121,9 @@ class ToRDFConverter:
 
             property_namespace = PropertyUrlUtils.create_namespace(property_url, table_metadata['url'])
             predicate = self._predicate_node(property_namespace, property_url, col_name)
-            self._parse_cell_values(values, col_metadata, subject, predicate)
+            self._parse_cell_values(values, col_metadata, subject, predicate, atdm_row, table_metadata['url'])
 
-    def _parse_cell_values(self, values, col_metadata, subject, predicate):
+    def _parse_cell_values(self, values, col_metadata, subject, predicate, atdm_row, tm_url):
         """ Parses single cell value, values if 'separator' is present"""
         if 'ordered' in col_metadata and col_metadata['ordered'] is True and len(values) > 1:
             next_item = BNode()
@@ -140,13 +139,14 @@ class ToRDFConverter:
             self.graph.add((subject, predicate, rdf_list))
         else:
             for value in values:
-                object_node = self._object_node(value, col_metadata)
+                object_node = self._object_node(value, col_metadata, atdm_row, tm_url)
                 self.graph.add((subject, predicate, object_node))
 
     @staticmethod
-    def _object_node(value, col_metadata):
+    def _object_node(value, col_metadata, atdm_row, tm_url):
         if 'valueUrl' in col_metadata:
-            return ValueUrlUtils.create_uri_ref(value, col_metadata['valueUrl'])
+            return UriTemplateUtils.insert_value_rdf(col_metadata['valueUrl'], atdm_row, col_metadata.get('name'), tm_url)
+            return ValueUrlUtils.create_uri_ref(value, col_metadata['valueUrl'], col_metadata)
         else:
             lang = col_metadata.get('lang')
             if not datatypeutils.is_compatible_with_datatype(value, col_metadata.get('datatype')):
