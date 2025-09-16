@@ -1,5 +1,5 @@
 from rdflib import URIRef, Literal
-
+import re
 from csvwlib.utils.ATDMUtils import ATDMUtils
 from csvwlib.utils.json.CommonProperties import CommonProperties
 
@@ -14,6 +14,27 @@ class UriTemplateUtils:
         return URIRef(filled_url) if filled_url.startswith('http') else Literal(filled_url)
 
     @staticmethod
+    def expand_template(template: str, row: dict) -> str:
+        """
+        Expand a CSVW-style URI template with values from a row dict.
+        
+        Args:
+            template: A template string like "http://ex.org/book#{id}"
+            row: A dict mapping column names or reserved vars to values.
+        
+        Returns:
+            The expanded string.
+        """
+        def replacer(match):
+            var = match.group(1)
+            print('r',row)
+            if var in row.keys():
+                return str(row[var])
+            raise KeyError(f"Missing value for template variable '{var}'")
+
+        return re.sub(r"\{([^}]+)\}", replacer, template)
+
+    @staticmethod
     def insert_value(url, atdm_row, col_name, domain_url):
         """ Inserts value into uri template - between {...}
         If url is common property, it is returned unmodified
@@ -24,18 +45,16 @@ class UriTemplateUtils:
         if '{' not in url:
             return url
 
-        key = url[url.find('{') + 1:url.find('}')]
-        key = key.replace('#', '')
-        prefix = UriTemplateUtils.prefix(url, '')
+        cols = {
+            "_row": str(atdm_row.get('number','')),
+            "_sourceRow": str(atdm_row.get('url','').rsplit('=').pop()),
+            "_name": str(col_name)
+        }
 
-        if key == '_row':
-            return prefix + str(atdm_row['number'])
-        elif key == '_sourceRow':
-            return prefix + atdm_row['url'].rsplit('=')[1]
-        elif key == '_name':
-            return prefix + col_name
-        else:
-            return prefix + ATDMUtils.column_value(atdm_row, key)
+        for k, v in atdm_row['cells'].items():
+            cols[k] = str(v[0])
+
+        return UriTemplateUtils.expand_template(url, cols)
 
     @staticmethod
     def expand(url, domain_url):
