@@ -80,9 +80,17 @@ class CommonProperties:
             return prop
 
         prefix, prop = prop.split(':')
-        return Namespaces.get(prefix).term(prop)
+        return CommonProperties.ns_has_term(prefix, prop)
 
     @staticmethod
     def expand_property(prop):
         prefix, prop = prop.split(':')
-        return Namespaces.get(prefix).term(prop)
+        return CommonProperties.ns_has_term(prefix, prop)
+
+    @staticmethod
+    def ns_has_term(prefix, prop):
+        pf = Namespaces.get(prefix)
+        if pf:
+            return pf.term(prop)
+        else:
+            raise Exception(f'Namespace {prefix} for {prop} not registered')
