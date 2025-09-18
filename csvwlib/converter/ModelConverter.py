@@ -201,7 +201,9 @@ class ModelConverter:
             for i, column in enumerate(table['tableSchema']['columns'], start=1):
                 if 'name' not in column:
                     language = JSONLDUtils.language(self.metadata['@context'], table)
-                    titles = column['titles'] if type(column['titles']) is list else [column['titles']]
+                    titles = column.get('titles',[]) 
+                    if type(titles) is not list:
+                        titles = [titles]
                     if language is None:
                         column['name'] = DOPUtils.natural_language_first_value(titles)
                     else:
