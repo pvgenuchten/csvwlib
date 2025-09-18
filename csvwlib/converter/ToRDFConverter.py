@@ -82,7 +82,7 @@ class ToRDFConverter:
                 print(f"term {virtual_column['propertyUrl']} not in namespaces")
 
     def _add_file_metadata(self, metadata, node):
-        language = JSONLDUtils.language(self.metadata['@context'])
+        language = JSONLDUtils.language(self.metadata.get('@context',[]))
         for key, value in metadata.items():
             if CommonProperties.is_common_property(key) or key == 'notes':
                 triples = CommonProperties.property_to_triples((key, metadata[key]), node, language)

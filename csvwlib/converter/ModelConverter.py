@@ -75,7 +75,7 @@ class ModelConverter:
     def _normalize_metadata_base_url(self):
         if self.metadata is None:
             return
-        for context_entry in self.metadata['@context']:
+        for context_entry in self.metadata.get('@context',[]):
             if type(context_entry) is dict and '@base' in context_entry:
                 original_url = self.metadata['url']
                 if original_url.startswith('http'):
