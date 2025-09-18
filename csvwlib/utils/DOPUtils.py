@@ -7,4 +7,4 @@ class DOPUtils:
         if type(property_value) is str:
             return property_value
         elif type(property_value) is list:
-            return property_value[0]
+            return next(iter(property_value or []), None)
