@@ -270,7 +270,7 @@ class ModelConverter:
             for i, column_metadata in enumerate(table_metadata['tableSchema']['columns']):
                 if 'default' in column_metadata:
                     for row in csv:
-                        if row[i] == '':
+                        if i < len(row) and row[i] == '':
                             row[i] = column_metadata['default']
 
     def _normalize_numbers_notation(self):
