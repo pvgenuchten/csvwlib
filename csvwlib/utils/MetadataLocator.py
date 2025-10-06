@@ -1,6 +1,7 @@
 import json as jsonlib
 
-import requests, os, urlparse
+import requests, os, urllib
+
 
 from csvwlib.utils.metadata import MetadataValidator
 from csvwlib.utils.url.WellKnownUriResolver import WellKnownUriResolver
@@ -11,7 +12,7 @@ class MetadataLocator:
     @staticmethod
     def find_and_get(csv_url, metadata_url=None):
         if metadata_url is not None:
-            if urlparse.urlparse(metadata_url).scheme != "":
+            if urllib.parse.urlparse(metadata_url).scheme != "":
                 return jsonlib.loads(requests.get(metadata_url).content.decode())
             elif os.path.exists(metadata_url):
                 with open(metadata_url,"r") as f:
@@ -30,7 +31,6 @@ class MetadataLocator:
         metadata = MetadataLocator._retrieve_from_site_wide_conf(csv_url)
         if metadata is not None:
             return metadata
-
         if '?' in csv_url:
             csv_url, query = csv_url.split('?')
             metadata_url = csv_url + '-metadata.json'
