@@ -70,15 +70,23 @@ class ToRDFConverter:
                 continue
             subject = URIRef(UriTemplateUtils.insert_value(virtual_column['aboutUrl'], atdm_row, '',
                                                            table_metadata['url']))
+
             predicate = Namespaces.get_term(virtual_column['propertyUrl'])
-            obj = UriTemplateUtils.insert_value(virtual_column['valueUrl'], atdm_row, '', table_metadata['url'])
-            obj = CommonProperties.expand_property_if_possible(obj)
-            self.graph.add((subject, predicate, URIRef(obj)))
-            if self.mode == CONST_STANDARD_MODE:
-                self.graph.add((row_node, CSVW.describes, subject))
+            if predicate:
+
+                if 'valueUrl' in virtual_column:
+                    obj = UriTemplateUtils.insert_value(virtual_column['valueUrl'], atdm_row, '', table_metadata['url'])
+                    obj = CommonProperties.expand_property_if_possible(obj)
+                    self.graph.add((subject, predicate, URIRef(obj)))
+                elif 'default' in virtual_column: 
+                    self.graph.add((subject, predicate, self._object_node(virtual_column['default'], virtual_column, atdm_row, '')))
+                if self.mode == CONST_STANDARD_MODE:
+                    self.graph.add((row_node, CSVW.describes, subject))
+            else:
+                print(f"term {virtual_column['propertyUrl']} not in namespaces")
 
     def _add_file_metadata(self, metadata, node):
-        language = JSONLDUtils.language(self.metadata['@context'])
+        language = JSONLDUtils.language(self.metadata.get('@context',[]))
         for key, value in metadata.items():
             if CommonProperties.is_common_property(key) or key == 'notes':
                 triples = CommonProperties.property_to_triples((key, metadata[key]), node, language)
