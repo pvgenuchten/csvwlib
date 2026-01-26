@@ -21,4 +21,5 @@ class OntologyUtils:
             return None
 
         datatype = OntologyUtils._name_mappings.get(datatype, datatype)
-        return OntologyUtils._type_mappings.get(datatype, XSD.term(datatype))
+        xsd_type = getattr(XSD, datatype)
+        return OntologyUtils._type_mappings.get(datatype, xsd_type)

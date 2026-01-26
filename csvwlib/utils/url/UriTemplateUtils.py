@@ -27,7 +27,6 @@ class UriTemplateUtils:
         """
         def replacer(match):
             var = match.group(1)
-            print('r',row)
             if var in row.keys():
                 return str(row[var])
             raise KeyError(f"Missing value for template variable '{var}'")
