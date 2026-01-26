@@ -47,7 +47,11 @@ setuptools.setup(
         "language-tags >= 0.4.3"
         ],
     zip_safe=False,
-
+    entry_points={
+        "console_scripts": [
+            "csvwlib=csvwlib.csvwcli:main"
+        ],
+    },
     keywords = ", ".join(KEYWORDS),
     classifiers = [
         "Programming Language :: Python :: 3",

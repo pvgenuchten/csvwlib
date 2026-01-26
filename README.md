@@ -18,8 +18,43 @@ Requires Python 3.6 or later.
 pip install csvwlib
 ```
 
+## Usage from console
 
-## Usage
+`csvwlib` can be used directly from the console via the `csvwlib` command-line tool (installed automatically with the package).
+
+### Basic Usage
+
+```bash
+csvwlib [options]
+```
+
+Convert a CSV file (with optional metadata) into RDF (Turtle):
+
+```bash
+csvwlib -c https://w3c.github.io/csvw/tests/test001.csv -f ttl -o output.ttl
+```
+
+Convert using **metadata only** (metadata references the csv):
+
+```bash
+csvwlib -m https://w3c.github.io/csvw/tests/test001.json -o table.json
+```
+
+
+### Options
+
+| Option            | Description                                                                |
+| ----------------- | -------------------------------------------------------------------------- |
+| `-c, --csv`       | CSV file path or URL                                                       |
+| `-m, --metadata`  | Path or URL to CSVW metadata file                                          |
+| `-f, --format`    | RDF serialization format (e.g. `ttl`, `xml`, `json-ld`); default: `json-ld`|
+| `-o, --output`    | Output file path                                                           |
+| `--mode`          | Conversion mode (`standard` or `minimal`); default: `minimal`              |
+| `-h, --help`      | Show usage help                                                            |
+
+
+
+## Usage as python library
 
 The library exposes one class - `CSVWConverter` which has methods `to_json()` and `to_rdf()`
 
@@ -51,6 +86,8 @@ From the `rdflib` docs:
 > Format support can be extended with plugins, but "xml", "n3", "turtle", "nt", "pretty-xml", "trix", "trig" and "nquads" are built in.
 
 If you don't specify the format, you will receive a `rdflib.Graph` object. 
+
+
 
 
 ## Examples
