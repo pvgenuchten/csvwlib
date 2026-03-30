@@ -167,6 +167,8 @@ class ToRDFConverter:
 
     @staticmethod
     def _normalize_to_uri(string):
+        if string in [None, '']:
+            return ''
         string = quote(string, safe='')
         string = string.replace('-', '%2D')
         return string
