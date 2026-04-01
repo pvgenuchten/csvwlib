@@ -105,9 +105,9 @@ class MetadataValidator:
             self.check_titles(table)
 
     def check_csv_reference(self, table, metadata):
-        if isinstance(self.start_url,dict):
+        if isinstance(self.start_url, dict):
             return
-        if not self.start_url.endswith('.csv'):
+        if not (self.start_url or "").endswith('.csv'):
             return
         if table['url'] != self.start_url:
             for key in list(metadata.keys()):
